@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.github.sabomichal</groupId>
-    <artifactId>jooq-meta-postgtres-flyway</artifactId>
+    <artifactId>jooq-meta-postgres-flyway</artifactId>
     <version>0-SNAPSHOT</version>
 
     <properties>
@@ -208,7 +208,7 @@
     <scm>
         <connection>scm:git:https://github.com/sabomichal/jooq-meta-postgres-flyway.git</connection>
         <developerConnection>scm:git:git@github.com:sabomichal/jooq-meta-postgres-flyway.git</developerConnection>
-        <url>https://github.com/sabomichal/immutable-xjc</url>
+        <url>https://github.com/sabomichal/jooq-meta-postgres-flyway</url>
         <tag>HEAD</tag>
     </scm>
 
