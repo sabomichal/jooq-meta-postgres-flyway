@@ -4,6 +4,7 @@
 This package provides a jOOQ meta data source that spins up a PostgreSQL databse running inside docker container using Testcontainers, migrates the database schema using Flyway before reverse engineering the outcome by jOOQ code generator.
 
 ## Usage
+### Maven
 Simply add the meta plugin as a dependency to jOOQ codegen maven plugin. The following example demonstrates the usage.
 ```xml
 <plugin>
