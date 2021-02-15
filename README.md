@@ -47,3 +47,4 @@ Simply add the meta plugin as a dependency to jOOQ codegen maven plugin. The fol
     </executions>
 </plugin>
 ```
+If you like it, give it a star, if you don't, write an issue.
