@@ -75,10 +75,14 @@ public class PostgresDDLDatabase extends PostgresDatabase {
                     .map(l -> Location.FILESYSTEM_PREFIX + getBasedir() + "/" + l)
                     .toArray(String[]::new);
 
+                String defaultSchema = getProperties().getProperty("defaultSchema");
+                if (isBlank(locationsProperty)) {
+                    defaultSchema = "public";
+                }
                 Flyway.configure()
                     .dataSource(postgresContainer.getJdbcUrl(), postgresContainer.getUsername(), postgresContainer.getPassword())
                     .locations(locations)
-                    .schemas("public")
+                    .schemas(defaultSchema)
                     .load()
                     .migrate();
 
