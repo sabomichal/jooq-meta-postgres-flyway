@@ -61,7 +61,7 @@ jobs:
     #    uses a compiled language
 
     - run: |
-       mvn -B package --file pom.xml
+       mvn -B compile --file pom.xml
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v1
