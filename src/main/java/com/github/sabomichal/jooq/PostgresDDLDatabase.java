@@ -34,7 +34,7 @@ import static org.jooq.tools.StringUtils.isBlank;
 public class PostgresDDLDatabase extends PostgresDatabase {
 
     private static final JooqLogger log = JooqLogger.getLogger(PostgresDDLDatabase.class);
-    public static final String DEFAULT_DOCKER_IMAGE = "postgres:12";
+    public static final String DEFAULT_DOCKER_IMAGE = "postgres:13";
 
     private Connection connection;
 
