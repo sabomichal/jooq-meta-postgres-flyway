@@ -15,17 +15,17 @@
         <dependency>
             <groupId>org.jooq</groupId>
             <artifactId>jooq-meta</artifactId>
-            <version>3.13.4</version>
+            <version>3.14.8</version>
         </dependency>
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
-            <version>6.5.5</version>
+            <version>7.7.0</version>
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>postgresql</artifactId>
-            <version>1.14.3</version>
+            <version>1.15.2</version>
         </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>
