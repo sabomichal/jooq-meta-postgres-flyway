@@ -76,7 +76,7 @@ public class PostgresDDLDatabase extends PostgresDatabase {
                     .toArray(String[]::new);
 
                 String defaultSchema = getProperties().getProperty("defaultSchema");
-                if (isBlank(locationsProperty)) {
+                if (isBlank(defaultSchema)) {
                     defaultSchema = "public";
                 }
                 Flyway.configure()
