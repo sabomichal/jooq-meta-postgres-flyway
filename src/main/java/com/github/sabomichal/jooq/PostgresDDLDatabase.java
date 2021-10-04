@@ -35,7 +35,7 @@ public class PostgresDDLDatabase extends PostgresDatabase {
 
     private static final JooqLogger log = JooqLogger.getLogger(PostgresDDLDatabase.class);
     private static final DockerImageName DEFAULT_IMAGE_NAME = DockerImageName.parse("postgres");
-    public static final String DEFAULT_TAG = "13";
+    private static final String DEFAULT_TAG = "13";
 
     private Connection connection;
 
