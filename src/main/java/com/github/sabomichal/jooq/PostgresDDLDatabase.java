@@ -1,9 +1,5 @@
 package com.github.sabomichal.jooq;
 
-import java.sql.Connection;
-import java.util.Arrays;
-import java.util.Properties;
-
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.Location;
 import org.jooq.DSLContext;
@@ -14,7 +10,11 @@ import org.jooq.meta.postgres.PostgresDatabase;
 import org.jooq.tools.JooqLogger;
 import org.jooq.tools.jdbc.JDBCUtils;
 import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.utility.DockerImageName;
 
+import java.sql.Connection;
+import java.util.Arrays;
+import java.util.Properties;
 
 import static org.jooq.tools.StringUtils.isBlank;
 
@@ -34,7 +34,8 @@ import static org.jooq.tools.StringUtils.isBlank;
 public class PostgresDDLDatabase extends PostgresDatabase {
 
     private static final JooqLogger log = JooqLogger.getLogger(PostgresDDLDatabase.class);
-    public static final String DEFAULT_DOCKER_IMAGE = "postgres:13";
+    private static final DockerImageName DEFAULT_IMAGE_NAME = DockerImageName.parse("postgres");
+    public static final String DEFAULT_TAG = "13";
 
     private Connection connection;
 
@@ -49,16 +50,18 @@ public class PostgresDDLDatabase extends PostgresDatabase {
     protected Connection connection() {
         if (connection == null) {
             try {
-                String dockerImage = getProperties().getProperty("dockerImage");
-                if (isBlank(dockerImage)) {
-                    dockerImage = DEFAULT_DOCKER_IMAGE;
+                final String customDockerImageName = getProperties().getProperty("dockerImage");
+                DockerImageName dockerImageName;
+                if (isBlank(customDockerImageName)) {
+                    dockerImageName = DEFAULT_IMAGE_NAME.withTag(DEFAULT_TAG);
+                } else {
+                    dockerImageName = DockerImageName.parse(customDockerImageName).asCompatibleSubstituteFor("postgres");
                 }
 
-                final PostgreSQLContainer<?> postgresContainer = new PostgreSQLContainer<>(dockerImage)
-                    .withDatabaseName("jooqdb")
-                    .withUsername("user")
-                    .withPassword("pwd");
-
+                final PostgreSQLContainer<?> postgresContainer = new PostgreSQLContainer<>(dockerImageName)
+                        .withDatabaseName("jooqdb")
+                        .withUsername("user")
+                        .withPassword("pwd");
                 postgresContainer.start();
 
                 Properties info = new Properties();
@@ -72,19 +75,19 @@ public class PostgresDDLDatabase extends PostgresDatabase {
                     log.warn("No scripts location defined", "It is recommended that you provide an explicit script directory to scan");
                 }
                 String[] locations = Arrays.stream(locationsProperty.split(","))
-                    .map(l -> Location.FILESYSTEM_PREFIX + getBasedir() + "/" + l)
-                    .toArray(String[]::new);
+                        .map(l -> Location.FILESYSTEM_PREFIX + getBasedir() + "/" + l)
+                        .toArray(String[]::new);
 
                 String defaultSchema = getProperties().getProperty("defaultSchema");
                 if (isBlank(defaultSchema)) {
                     defaultSchema = "public";
                 }
                 Flyway.configure()
-                    .dataSource(postgresContainer.getJdbcUrl(), postgresContainer.getUsername(), postgresContainer.getPassword())
-                    .locations(locations)
-                    .schemas(defaultSchema)
-                    .load()
-                    .migrate();
+                        .dataSource(postgresContainer.getJdbcUrl(), postgresContainer.getUsername(), postgresContainer.getPassword())
+                        .locations(locations)
+                        .schemas(defaultSchema)
+                        .load()
+                        .migrate();
 
                 setConnection(connection);
 
