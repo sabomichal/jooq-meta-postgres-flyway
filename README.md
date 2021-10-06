@@ -14,7 +14,7 @@ Simply add the meta plugin as a dependency to jOOQ codegen maven plugin. The fol
         <dependency>
             <groupId>com.github.sabomichal</groupId>
             <artifactId>jooq-meta-postgres-flyway</artifactId>
-            <version>1.0.1</version>
+            <version>1.0.4</version>
         </dependency>
     </dependencies>
     <executions>
