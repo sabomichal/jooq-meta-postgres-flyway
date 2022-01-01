@@ -4,6 +4,12 @@
 This package provides a jOOQ meta data source that spins up a PostgreSQL database running inside docker container using Testcontainers, migrates the database schema using Flyway before reverse engineering the outcome by jOOQ code generator.
 
 ## Usage
+### Properties
+Plugin can be further customized with these additional optional properties:
+#### locations
+Used directly as the Flyway locations property. Comma-separated list of locations to scan recursively for migrations. Defaults to empty.
+#### dockerImage
+Custom Docker image name used as compatible substitute for default image name "postgres:14".
 ### Maven
 Simply add the meta plugin as a dependency to jOOQ codegen maven plugin. The following example demonstrates the usage.
 ```xml
@@ -32,6 +38,8 @@ Simply add the meta plugin as a dependency to jOOQ codegen maven plugin. The fol
                             <property>
                                 <key>locations</key>
                                 <value>src/main/resources/db/migration</value>
+                                <key>dockerImage</key>
+                                <value>postgres:14</value>
                             </property>
                         </properties>
                         <includes>public.*</includes>
