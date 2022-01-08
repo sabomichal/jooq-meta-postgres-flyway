@@ -20,7 +20,7 @@ Simply add the meta plugin as a dependency to jOOQ codegen maven plugin. The fol
         <dependency>
             <groupId>com.github.sabomichal</groupId>
             <artifactId>jooq-meta-postgres-flyway</artifactId>
-            <version>1.0.4</version>
+            <version>1.0.5</version>
         </dependency>
     </dependencies>
     <executions>
@@ -54,5 +54,43 @@ Simply add the meta plugin as a dependency to jOOQ codegen maven plugin. The fol
         </execution>
     </executions>
 </plugin>
+```
+###Gradle
+```groovy
+dependencies {
+    // ...
+    jooqGenerator "com.github.sabomichal:jooq-meta-postgres-flyway:1.0.5"
+    // ...
+}
+
+jooq {
+    configurations {
+        main {
+            generationTool {
+                generator {
+                    database {
+                        name = "com.github.sabomichal.jooq.PostgresDDLDatabase"
+                        inputSchema = "public"
+                        includes = "public.*"
+                        excludes = "flyway_schema_history"
+                        properties {
+                            property {
+                                key = "locations"
+                                value = "src/main/resources/db/migration"
+                            }
+                            property {
+                                key = "dockerImage"
+                                value = "postgres:14"
+                            }
+                        }
+                    }
+                    generate {
+                        // ...
+                    }
+                }
+            }
+        }
+    }
+}
 ```
 If you like it, give it a star, if you don't, write an issue.
