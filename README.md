@@ -55,7 +55,7 @@ Simply add the meta plugin as a dependency to jOOQ codegen maven plugin. The fol
     </executions>
 </plugin>
 ```
-###Gradle
+### Gradle
 ```groovy
 dependencies {
     // ...
