@@ -15,7 +15,7 @@
         <dependency>
             <groupId>org.jooq</groupId>
             <artifactId>jooq-meta</artifactId>
-            <version>3.16.0</version>
+            <version>3.16.1</version>
         </dependency>
         <dependency>
             <groupId>org.flywaydb</groupId>
