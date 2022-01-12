@@ -1,5 +1,12 @@
 package com.github.sabomichal.jooq;
 
+import java.sql.Connection;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Properties;
+import java.util.stream.Collectors;
+
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.Location;
 import org.jooq.DSLContext;
@@ -12,9 +19,6 @@ import org.jooq.tools.jdbc.JDBCUtils;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.utility.DockerImageName;
 
-import java.sql.Connection;
-import java.util.Arrays;
-import java.util.Properties;
 
 import static org.jooq.tools.StringUtils.isBlank;
 
@@ -36,6 +40,7 @@ public class PostgresDDLDatabase extends PostgresDatabase {
     private static final JooqLogger log = JooqLogger.getLogger(PostgresDDLDatabase.class);
     private static final DockerImageName DEFAULT_IMAGE_NAME = DockerImageName.parse("postgres");
     private static final String DEFAULT_TAG = "14";
+    private static final String KEY_VALUE_SEPARATOR = "=";
 
     private Connection connection;
 
@@ -59,9 +64,9 @@ public class PostgresDDLDatabase extends PostgresDatabase {
                 }
 
                 final PostgreSQLContainer<?> postgresContainer = new PostgreSQLContainer<>(dockerImageName)
-                        .withDatabaseName("jooqdb")
-                        .withUsername("user")
-                        .withPassword("pwd");
+                    .withDatabaseName("jooqdb")
+                    .withUsername("user")
+                    .withPassword("pwd");
                 postgresContainer.start();
 
                 Properties info = new Properties();
@@ -75,19 +80,30 @@ public class PostgresDDLDatabase extends PostgresDatabase {
                     log.warn("No scripts location defined", "It is recommended that you provide an explicit script directory to scan");
                 }
                 String[] locations = Arrays.stream(locationsProperty.split(","))
-                        .map(l -> Location.FILESYSTEM_PREFIX + getBasedir() + "/" + l)
-                        .toArray(String[]::new);
+                    .map(l -> Location.FILESYSTEM_PREFIX + getBasedir() + "/" + l)
+                    .toArray(String[]::new);
+
+                Map<String, String> placeholders;
+                String placeholdersProperty = getProperties().getProperty("placeholders");
+                if (isBlank(placeholdersProperty)) {
+                    placeholders = Collections.emptyMap();
+                } else {
+                    placeholders = Arrays.stream(placeholdersProperty.split(","))
+                        .map(p -> p.split(KEY_VALUE_SEPARATOR))
+                        .collect(Collectors.toMap(pair -> pair[0], pair -> pair[1]));
+                }
 
                 String defaultSchema = getProperties().getProperty("defaultSchema");
                 if (isBlank(defaultSchema)) {
                     defaultSchema = "public";
                 }
                 Flyway.configure()
-                        .dataSource(postgresContainer.getJdbcUrl(), postgresContainer.getUsername(), postgresContainer.getPassword())
-                        .locations(locations)
-                        .schemas(defaultSchema)
-                        .load()
-                        .migrate();
+                    .dataSource(postgresContainer.getJdbcUrl(), postgresContainer.getUsername(), postgresContainer.getPassword())
+                    .locations(locations)
+                    .schemas(defaultSchema)
+                    .placeholders(placeholders)
+                    .load()
+                    .migrate();
 
                 setConnection(connection);
 

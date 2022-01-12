@@ -10,6 +10,8 @@ Plugin can be further customized with these additional optional properties:
 Used directly as the Flyway locations property. Comma-separated list of locations to scan recursively for migrations. Defaults to empty.
 #### dockerImage
 Custom Docker image name used as compatible substitute for default image name "postgres:14".
+#### placeholders
+Used as the Flyway placeholders property. Comma-separated list of key-value pairs in a form of "key=value". Defaults to empty map.
 ### Maven
 Simply add the meta plugin as a dependency to jOOQ codegen maven plugin. The following example demonstrates the usage.
 ```xml
@@ -20,7 +22,7 @@ Simply add the meta plugin as a dependency to jOOQ codegen maven plugin. The fol
         <dependency>
             <groupId>com.github.sabomichal</groupId>
             <artifactId>jooq-meta-postgres-flyway</artifactId>
-            <version>1.0.5</version>
+            <version>1.0.6</version>
         </dependency>
     </dependencies>
     <executions>
@@ -40,6 +42,8 @@ Simply add the meta plugin as a dependency to jOOQ codegen maven plugin. The fol
                                 <value>src/main/resources/db/migration</value>
                                 <key>dockerImage</key>
                                 <value>postgres:14</value>
+                                <key>placeholders</key>
+                                <value>a=1,b=2</value>
                             </property>
                         </properties>
                         <includes>public.*</includes>
@@ -59,7 +63,7 @@ Simply add the meta plugin as a dependency to jOOQ codegen maven plugin. The fol
 ```groovy
 dependencies {
     // ...
-    jooqGenerator "com.github.sabomichal:jooq-meta-postgres-flyway:1.0.5"
+    jooqGenerator "com.github.sabomichal:jooq-meta-postgres-flyway:1.0.6"
     // ...
 }
 
@@ -81,6 +85,10 @@ jooq {
                             property {
                                 key = "dockerImage"
                                 value = "postgres:14"
+                            }
+                            property {
+                                key = "placeholders"
+                                value = "a=1,b=2"
                             }
                         }
                     }
