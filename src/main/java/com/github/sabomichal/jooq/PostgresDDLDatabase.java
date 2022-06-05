@@ -43,6 +43,7 @@ public class PostgresDDLDatabase extends PostgresDatabase {
     private static final String KEY_VALUE_SEPARATOR = "=";
 
     private Connection connection;
+    private PostgreSQLContainer<?> postgresContainer;
 
     @Override
     protected DSLContext create0() {
@@ -63,7 +64,7 @@ public class PostgresDDLDatabase extends PostgresDatabase {
                     dockerImageName = DockerImageName.parse(customDockerImageName).asCompatibleSubstituteFor("postgres");
                 }
 
-                final PostgreSQLContainer<?> postgresContainer = new PostgreSQLContainer<>(dockerImageName)
+                postgresContainer = new PostgreSQLContainer<>(dockerImageName)
                     .withDatabaseName("jooqdb")
                     .withUsername("user")
                     .withPassword("pwd");
@@ -118,6 +119,10 @@ public class PostgresDDLDatabase extends PostgresDatabase {
     public void close() {
         JDBCUtils.safeClose(connection);
         connection = null;
+        if (postgresContainer != null) {
+            postgresContainer.close();
+            postgresContainer = null;
+        }
         super.close();
     }
 }
