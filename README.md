@@ -3,6 +3,9 @@
 #### the jOOQ PostgreSQL DDL database with Flyway migrations
 This package provides a jOOQ meta data source that spins up a PostgreSQL database running inside docker container using Testcontainers, migrates the database schema using Flyway before reverse engineering the outcome by jOOQ code generator.
 
+## jOOQ version
+Plugin is built against jOOQ 3.17.x which itself works with Java 17 and higher. For Java 11 and jOOQ 3.16.x please use version 1.0.x of the plugin.
+
 ## Usage
 ### Properties
 Plugin can be further customized with these additional optional properties:
@@ -22,7 +25,7 @@ Simply add the meta plugin as a dependency to jOOQ codegen maven plugin. The fol
         <dependency>
             <groupId>com.github.sabomichal</groupId>
             <artifactId>jooq-meta-postgres-flyway</artifactId>
-            <version>1.0.6</version>
+            <version>${plugin.version}</version>
         </dependency>
     </dependencies>
     <executions>
@@ -63,7 +66,7 @@ Simply add the meta plugin as a dependency to jOOQ codegen maven plugin. The fol
 ```groovy
 dependencies {
     // ...
-    jooqGenerator "com.github.sabomichal:jooq-meta-postgres-flyway:1.0.6"
+    jooqGenerator "com.github.sabomichal:jooq-meta-postgres-flyway:${plugin.version}"
     // ...
 }
 
