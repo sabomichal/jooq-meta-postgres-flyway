@@ -14,9 +14,9 @@
         <maven.compiler.showWarnings>true</maven.compiler.showWarnings>
 
         <jooq.version>3.18.3</jooq.version>
-        <flyway.version>9.11.0</flyway.version>
-        <testcontainers.version>1.17.6</testcontainers.version>
-        <postgresql.version>42.5.4</postgresql.version>
+        <flyway.version>9.16.3</flyway.version>
+        <testcontainers.version>1.18.0</testcontainers.version>
+        <postgresql.version>42.6.0</postgresql.version>
     </properties>
 
     <dependencies>
@@ -126,7 +126,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-release-plugin</artifactId>
-                    <version>2.5.3</version>
+                    <version>3.0.0</version>
                 </plugin>
             </plugins>
         </pluginManagement>
