@@ -21,6 +21,7 @@ import org.testcontainers.utility.DockerImageName;
 
 
 import static org.jooq.tools.StringUtils.isBlank;
+import static org.testcontainers.containers.wait.strategy.Wait.forListeningPort;
 
 
 /**
@@ -67,7 +68,8 @@ public class PostgresDDLDatabase extends PostgresDatabase {
                 postgresContainer = new PostgreSQLContainer<>(dockerImageName)
                     .withDatabaseName("jooqdb")
                     .withUsername("user")
-                    .withPassword("pwd");
+                    .withPassword("pwd")
+                    .waitingFor(forListeningPort());
                 postgresContainer.start();
 
                 Properties info = new Properties();
