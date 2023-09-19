@@ -14,7 +14,7 @@
         <maven.compiler.showWarnings>true</maven.compiler.showWarnings>
 
         <jooq.version>3.18.6</jooq.version>
-        <flyway.version>9.20.0</flyway.version>
+        <flyway.version>9.22.1</flyway.version>
         <testcontainers.version>1.19.0</testcontainers.version>
         <postgresql.version>42.6.0</postgresql.version>
     </properties>
