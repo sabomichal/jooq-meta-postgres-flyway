@@ -15,6 +15,9 @@ Used directly as the Flyway locations property. Comma-separated list of location
 Custom Docker image name used as compatible substitute for default image name "postgres:14".
 #### placeholders
 Used as the Flyway placeholders property. Comma-separated list of key-value pairs in a form of "key=value". Defaults to empty map.
+#### flyway.postgresql.transactional.lock
+Boolean flag for enabling or disabling the `PostgreSQL` transactional locks, which were enabled by default in `flyway-core` version `9.1.2` and higher.
+See https://github.com/flyway/flyway/issues/3492 for more details. Defaults to `true`
 ### Maven
 Simply add the meta plugin as a dependency to jOOQ codegen maven plugin. The following example demonstrates the usage.
 ```xml
@@ -47,6 +50,8 @@ Simply add the meta plugin as a dependency to jOOQ codegen maven plugin. The fol
                                 <value>postgres:14</value>
                                 <key>placeholders</key>
                                 <value>a=1,b=2</value>
+                                <key>flyway.postgresql.transactional.lock</key>
+                                <value>true</value>
                             </property>
                         </properties>
                         <includes>public.*</includes>

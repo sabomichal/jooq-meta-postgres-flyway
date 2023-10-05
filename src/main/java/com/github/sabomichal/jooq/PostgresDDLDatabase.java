@@ -42,6 +42,7 @@ public class PostgresDDLDatabase extends PostgresDatabase {
     private static final DockerImageName DEFAULT_IMAGE_NAME = DockerImageName.parse("postgres");
     private static final String DEFAULT_TAG = "14";
     private static final String KEY_VALUE_SEPARATOR = "=";
+    private static final String FLYWAY_POSTGRESQL_TRANSACTIONAL_LOCK = "flyway.postgresql.transactional.lock";
 
     private Connection connection;
     private PostgreSQLContainer<?> postgresContainer;
@@ -100,7 +101,12 @@ public class PostgresDDLDatabase extends PostgresDatabase {
                 if (isBlank(defaultSchema)) {
                     defaultSchema = "public";
                 }
+
+                Map<String, String> flywayConfigProperties = Map.of(
+                        FLYWAY_POSTGRESQL_TRANSACTIONAL_LOCK, getProperties().getProperty(FLYWAY_POSTGRESQL_TRANSACTIONAL_LOCK, "true"));
+
                 Flyway.configure()
+                    .configuration(flywayConfigProperties)
                     .dataSource(postgresContainer.getJdbcUrl(), postgresContainer.getUsername(), postgresContainer.getPassword())
                     .locations(locations)
                     .schemas(defaultSchema)
