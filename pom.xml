@@ -13,9 +13,9 @@
         <maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
         <maven.compiler.showWarnings>true</maven.compiler.showWarnings>
 
-        <jooq.version>3.18.7</jooq.version>
-        <flyway.version>10.0.1</flyway.version>
-        <testcontainers.version>1.19.2</testcontainers.version>
+        <jooq.version>3.19.2</jooq.version>
+        <flyway.version>10.6.0</flyway.version>
+        <testcontainers.version>1.19.3</testcontainers.version>
         <postgresql.version>42.7.1</postgresql.version>
     </properties>
 
@@ -83,7 +83,7 @@
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>build-helper-maven-plugin</artifactId>
-                    <version>3.4.0</version>
+                    <version>3.5.0</version>
                     <executions>
                         <execution>
                             <id>default-maven-version</id>
