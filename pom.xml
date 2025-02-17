@@ -13,7 +13,7 @@
         <maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
         <maven.compiler.showWarnings>true</maven.compiler.showWarnings>
 
-        <jooq.version>3.19.7</jooq.version>
+        <jooq.version>3.19.18</jooq.version>
         <flyway.version>11.3.1</flyway.version>
         <testcontainers.version>1.20.4</testcontainers.version>
         <postgresql.version>42.7.5</postgresql.version>
