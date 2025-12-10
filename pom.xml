@@ -16,7 +16,7 @@
         <jooq.version>3.19.7</jooq.version>
         <flyway.version>11.3.4</flyway.version>
         <testcontainers.version>1.20.4</testcontainers.version>
-        <postgresql.version>42.7.5</postgresql.version>
+        <postgresql.version>42.7.7</postgresql.version>
     </properties>
 
     <dependencies>
