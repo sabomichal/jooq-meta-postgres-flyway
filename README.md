@@ -30,6 +30,11 @@ Simply add the meta plugin as a dependency to jOOQ codegen maven plugin. The fol
             <artifactId>jooq-meta-postgres-flyway</artifactId>
             <version>${plugin.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-database-postgresql</artifactId>
+            <version>${flyway.version}</version>
+        </dependency>
     </dependencies>
     <executions>
         <execution>
