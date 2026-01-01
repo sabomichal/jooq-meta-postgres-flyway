@@ -43,6 +43,7 @@ public class PostgresDDLDatabase extends PostgresDatabase {
     private static final String DEFAULT_TAG = "14";
     private static final String KEY_VALUE_SEPARATOR = "=";
     private static final String FLYWAY_POSTGRESQL_TRANSACTIONAL_LOCK = "flyway.postgresql.transactional.lock";
+    private static final String FILESYSTEM_PREFIX = "filesystem:";
 
     private Connection connection;
     private PostgreSQLContainer<?> postgresContainer;
@@ -84,7 +85,7 @@ public class PostgresDDLDatabase extends PostgresDatabase {
                     log.warn("No scripts location defined", "It is recommended that you provide an explicit script directory to scan");
                 }
                 String[] locations = Arrays.stream(locationsProperty.split(","))
-                    .map(l -> Location.FILESYSTEM_PREFIX + getBasedir() + "/" + l)
+                    .map(l -> FILESYSTEM_PREFIX + getBasedir() + "/" + l)
                     .toArray(String[]::new);
 
                 Map<String, String> placeholders;
