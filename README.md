@@ -71,6 +71,7 @@ Simply add the meta plugin as a dependency to jOOQ codegen maven plugin. The fol
 ```groovy
 dependencies {
     // ...
+    jooqCodegen("org.flywaydb:flyway-database-postgresql")
     jooqGenerator "com.github.sabomichal:jooq-meta-postgres-flyway:${plugin.version}"
     // ...
 }
