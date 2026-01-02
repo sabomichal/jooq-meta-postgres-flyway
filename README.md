@@ -4,7 +4,7 @@
 This package provides a jOOQ meta data source that spins up a PostgreSQL database running inside docker container using Testcontainers, migrates the database schema using Flyway before reverse engineering the outcome by jOOQ code generator.
 
 ## jOOQ version
-Plugin is built against jOOQ 3.19.x which itself works with Java 17 and higher. For Java 11 and jOOQ 3.16.x please use version 1.0.x of the plugin.
+Plugin is built against jOOQ 3.20.x which itself works with Java 21 and higher. For Java 11 and jOOQ 3.16.x please use version 1.0.x of the plugin.
 
 ## Usage
 ### Properties
