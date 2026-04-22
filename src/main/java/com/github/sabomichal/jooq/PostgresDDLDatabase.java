@@ -1,14 +1,6 @@
 package com.github.sabomichal.jooq;
 
-import java.sql.Connection;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Properties;
-import java.util.stream.Collectors;
-
 import org.flywaydb.core.Flyway;
-import org.flywaydb.core.api.Location;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.exception.DataAccessException;
@@ -16,9 +8,15 @@ import org.jooq.impl.DSL;
 import org.jooq.meta.postgres.PostgresDatabase;
 import org.jooq.tools.JooqLogger;
 import org.jooq.tools.jdbc.JDBCUtils;
-import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.postgresql.PostgreSQLContainer;
 import org.testcontainers.utility.DockerImageName;
 
+import java.sql.Connection;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Properties;
+import java.util.stream.Collectors;
 
 import static org.jooq.tools.StringUtils.isBlank;
 import static org.testcontainers.containers.wait.strategy.Wait.forListeningPort;
@@ -46,7 +44,7 @@ public class PostgresDDLDatabase extends PostgresDatabase {
     private static final String FILESYSTEM_PREFIX = "filesystem:";
 
     private Connection connection;
-    private PostgreSQLContainer<?> postgresContainer;
+    private PostgreSQLContainer postgresContainer;
 
     @Override
     protected DSLContext create0() {
@@ -67,7 +65,7 @@ public class PostgresDDLDatabase extends PostgresDatabase {
                     dockerImageName = DockerImageName.parse(customDockerImageName).asCompatibleSubstituteFor("postgres");
                 }
 
-                postgresContainer = new PostgreSQLContainer<>(dockerImageName)
+                postgresContainer = new PostgreSQLContainer(dockerImageName)
                     .withDatabaseName("jooqdb")
                     .withUsername("user")
                     .withPassword("pwd")
