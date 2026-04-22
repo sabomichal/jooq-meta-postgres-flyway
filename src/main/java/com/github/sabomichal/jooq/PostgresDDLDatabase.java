@@ -38,7 +38,7 @@ public class PostgresDDLDatabase extends PostgresDatabase {
 
     private static final JooqLogger log = JooqLogger.getLogger(PostgresDDLDatabase.class);
     private static final DockerImageName DEFAULT_IMAGE_NAME = DockerImageName.parse("postgres");
-    private static final String DEFAULT_TAG = "14";
+    private static final String DEFAULT_TAG = "18";
     private static final String KEY_VALUE_SEPARATOR = "=";
     private static final String FLYWAY_POSTGRESQL_TRANSACTIONAL_LOCK = "flyway.postgresql.transactional.lock";
     private static final String FILESYSTEM_PREFIX = "filesystem:";
