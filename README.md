@@ -35,6 +35,11 @@ Simply add the meta plugin as a dependency to jOOQ codegen maven plugin. The fol
             <artifactId>flyway-database-postgresql</artifactId>
             <version>${flyway.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>2.21</version>
+        </dependency>
     </dependencies>
     <executions>
         <execution>
