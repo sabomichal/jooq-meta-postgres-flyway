@@ -65,8 +65,13 @@ public class PostgresDDLDatabase extends PostgresDatabase {
                     dockerImageName = DockerImageName.parse(customDockerImageName).asCompatibleSubstituteFor("postgres");
                 }
 
+                String databaseName = getProperties().getProperty("databaseName");
+                if (isBlank(databaseName)) {
+                    databaseName = "jooqdb";
+                }
+
                 postgresContainer = new PostgreSQLContainer(dockerImageName)
-                    .withDatabaseName("jooqdb")
+                    .withDatabaseName(databaseName)
                     .withUsername("user")
                     .withPassword("pwd")
                     .waitingFor(forListeningPort());
@@ -77,6 +82,9 @@ public class PostgresDDLDatabase extends PostgresDatabase {
                 info.put("password", postgresContainer.getPassword());
                 connection = new org.postgresql.Driver().connect(postgresContainer.getJdbcUrl(), info);
 
+                Map<String, String> flywayConfigProperties = Map.of(
+                        FLYWAY_POSTGRESQL_TRANSACTIONAL_LOCK, getProperties().getProperty(FLYWAY_POSTGRESQL_TRANSACTIONAL_LOCK, "true"));
+
                 String locationsProperty = getProperties().getProperty("locations");
                 if (isBlank(locationsProperty)) {
                     locationsProperty = "";
@@ -85,6 +93,11 @@ public class PostgresDDLDatabase extends PostgresDatabase {
                 String[] locations = Arrays.stream(locationsProperty.split(","))
                     .map(l -> FILESYSTEM_PREFIX + getBasedir() + "/" + l)
                     .toArray(String[]::new);
+
+                String defaultSchema = getProperties().getProperty("defaultSchema");
+                if (isBlank(defaultSchema)) {
+                    defaultSchema = "public";
+                }
 
                 Map<String, String> placeholders;
                 String placeholdersProperty = getProperties().getProperty("placeholders");
@@ -96,20 +109,20 @@ public class PostgresDDLDatabase extends PostgresDatabase {
                         .collect(Collectors.toMap(pair -> pair[0], pair -> pair[1]));
                 }
 
-                String defaultSchema = getProperties().getProperty("defaultSchema");
-                if (isBlank(defaultSchema)) {
-                    defaultSchema = "public";
-                }
+                String initSql = getProperties().getProperty("initSql");
 
-                Map<String, String> flywayConfigProperties = Map.of(
-                        FLYWAY_POSTGRESQL_TRANSACTIONAL_LOCK, getProperties().getProperty(FLYWAY_POSTGRESQL_TRANSACTIONAL_LOCK, "true"));
-
-                Flyway.configure()
+                var flywayConfig = Flyway.configure()
                     .configuration(flywayConfigProperties)
                     .dataSource(postgresContainer.getJdbcUrl(), postgresContainer.getUsername(), postgresContainer.getPassword())
                     .locations(locations)
                     .schemas(defaultSchema)
-                    .placeholders(placeholders)
+                    .placeholders(placeholders);
+
+                if (!isBlank(initSql)) {
+                    flywayConfig.initSql(initSql);
+                }
+
+                flywayConfig
                     .load()
                     .migrate();
 
