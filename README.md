@@ -54,6 +54,8 @@ Simply add the meta plugin as a dependency to jOOQ codegen maven plugin. The fol
                         <name>com.github.sabomichal.jooq.PostgresDDLDatabase</name>
                         <properties>
                             <property>
+                                <key>databaseName</key>
+                                <value>jooqDb</value>
                                 <key>locations</key>
                                 <value>src/main/resources/db/migration</value>
                                 <key>dockerImage</key>
@@ -64,6 +66,8 @@ Simply add the meta plugin as a dependency to jOOQ codegen maven plugin. The fol
                                 <value>public</value>
                                 <key>flyway.postgresql.transactional.lock</key>
                                 <value>true</value>
+                                <key>initSql</key>
+                                <value>SET search_path TO public;</value>
                             </property>
                         </properties>
                         <includes>public.*</includes>
@@ -100,6 +104,10 @@ jooq {
                         excludes = "flyway_schema_history"
                         properties {
                             property {
+                                key = "databaseName"
+                                value = "jooqDb"
+                            }
+                            property {
                                 key = "locations"
                                 value = "src/main/resources/db/migration"
                             }
@@ -114,6 +122,10 @@ jooq {
                             property {
                                 key = "defaultSchema"
                                 value = "public"
+                            }
+                             property {
+                                key = "initSql"
+                                value = "SET search_path TO public;"
                             }
                         }
                     }
