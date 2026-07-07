@@ -60,6 +60,8 @@ Simply add the meta plugin as a dependency to jOOQ codegen maven plugin. The fol
                                 <value>postgres:14</value>
                                 <key>placeholders</key>
                                 <value>a=1,b=2</value>
+                                <key>defaultSchema</key>
+                                <value>public</value>
                                 <key>flyway.postgresql.transactional.lock</key>
                                 <value>true</value>
                             </property>
@@ -108,6 +110,10 @@ jooq {
                             property {
                                 key = "placeholders"
                                 value = "a=1,b=2"
+                            }
+                            property {
+                                key = "defaultSchema"
+                                value = "public"
                             }
                         }
                     }
