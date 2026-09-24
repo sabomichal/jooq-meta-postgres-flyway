@@ -1,25 +1,41 @@
-![Maven Central](https://img.shields.io/maven-central/v/com.github.sabomichal/jooq-meta-postgres-flyway) ![Java CI with Maven](https://github.com/sabomichal/jooq-meta-postgres-flyway/workflows/Java%20CI%20with%20Maven/badge.svg)
 # jooq-meta-postgres-flyway
-#### the jOOQ PostgreSQL DDL database with Flyway migrations
-This package provides a jOOQ meta data source that spins up a PostgreSQL database running inside docker container using Testcontainers, migrates the database schema using Flyway before reverse engineering the outcome by jOOQ code generator.
 
-## jOOQ version
-Plugin is built against jOOQ 3.21.x which itself works with Java 21 and higher. For Java 11 and jOOQ 3.16.x please use version 1.0.x of the plugin.
+[![Maven Central](https://img.shields.io/maven-central/v/com.github.sabomichal/jooq-meta-postgres-flyway?label=Maven%20Central)](https://central.sonatype.com/artifact/com.github.sabomichal/jooq-meta-postgres-flyway)
+[![Build](https://github.com/sabomichal/jooq-meta-postgres-flyway/actions/workflows/maven.yml/badge.svg)](https://github.com/sabomichal/jooq-meta-postgres-flyway/actions/workflows/maven.yml)
 
-## Usage
-### Properties
-Plugin can be further customized with these additional optional properties:
-#### locations
-Used directly as the Flyway locations property. Comma-separated list of locations to scan recursively for migrations. Defaults to empty.
-#### dockerImage
-Custom Docker image name used as compatible substitute for default image name "postgres:14".
-#### placeholders
-Used as the Flyway placeholders property. Comma-separated list of key-value pairs in a form of "key=value". Defaults to empty map.
-#### flyway.postgresql.transactional.lock
-Boolean flag for enabling or disabling the `PostgreSQL` transactional locks, which were enabled by default in `flyway-core` version `9.1.2` and higher.
-See https://github.com/flyway/flyway/issues/3492 for more details. Defaults to `true`
+jOOQ code generation from Flyway migrations, against a real PostgreSQL. The generator
+starts PostgreSQL in Docker (Testcontainers), runs your migrations with Flyway and then
+reverse-engineers the result. No running database needed at build time, only Docker.
+
+```
+db/migration/V1__init.sql ──Flyway──▶ postgres:18 (Testcontainers) ──jOOQ──▶ generated classes
+```
+
+## Features
+
+- **Real PostgreSQL**: the schema is built by the same engine that runs it in production,
+  so extensions, custom types and PL/pgSQL work, unlike with jOOQ's `DDLDatabase`.
+- **Plain Flyway migrations**: the ones your application already uses, with placeholders.
+- **Your PostgreSQL version**: pick any image compatible with `postgres`.
+
+## Setup
+
+| Plugin  | jOOQ   | Java |
+|---------|--------|------|
+| `2.0.x` | 3.21.x | 21+  |
+| `1.0.x` | 3.16.x | 11+  |
+
+Flyway 10+ needs `flyway-database-postgresql` on the generator classpath next to the plugin.
+
 ### Maven
-Simply add the meta plugin as a dependency to jOOQ codegen maven plugin. The following example demonstrates the usage.
+
+The plugin's dependencies need two overrides:
+
+- `testcontainers`: `jooq-parent` pins `testcontainers` 1.20.6 in its `dependencyManagement`,
+  which replaces the 2.x version the plugin needs (plugin `2.0.1` is built with `2.0.5`).
+- `jackson-annotations`: `docker-java-api` (pulled in by Testcontainers) brings an older
+  version, which breaks `jooq-codegen`.
+
 ```xml
 <plugin>
     <groupId>org.jooq</groupId>
@@ -28,17 +44,24 @@ Simply add the meta plugin as a dependency to jOOQ codegen maven plugin. The fol
         <dependency>
             <groupId>com.github.sabomichal</groupId>
             <artifactId>jooq-meta-postgres-flyway</artifactId>
-            <version>${plugin.version}</version>
+            <version>2.0.1</version>
         </dependency>
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-database-postgresql</artifactId>
             <version>${flyway.version}</version>
         </dependency>
+        <!-- jooq-parent pins testcontainers 1.20.6 -->
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+            <version>${testcontainers.version}</version>
+        </dependency>
+        <!-- docker-java-api brings an older version that breaks jooq-codegen -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
-            <version>2.21</version>
+            <version>2.22</version>
         </dependency>
     </dependencies>
     <executions>
@@ -52,27 +75,15 @@ Simply add the meta plugin as a dependency to jOOQ codegen maven plugin. The fol
                 <generator>
                     <database>
                         <name>com.github.sabomichal.jooq.PostgresDDLDatabase</name>
-                        <properties>
-                            <property>
-                                <key>databaseName</key>
-                                <value>jooqDb</value>
-                                <key>locations</key>
-                                <value>src/main/resources/db/migration</value>
-                                <key>dockerImage</key>
-                                <value>postgres:14</value>
-                                <key>placeholders</key>
-                                <value>a=1,b=2</value>
-                                <key>defaultSchema</key>
-                                <value>public</value>
-                                <key>flyway.postgresql.transactional.lock</key>
-                                <value>true</value>
-                                <key>initSql</key>
-                                <value>SET search_path TO public;</value>
-                            </property>
-                        </properties>
+                        <inputSchema>public</inputSchema>
                         <includes>public.*</includes>
                         <excludes>flyway_schema_history</excludes>
-                        <inputSchema>public</inputSchema>
+                        <properties>
+                            <property>
+                                <key>locations</key>
+                                <value>src/main/resources/db/migration</value>
+                            </property>
+                        </properties>
                     </database>
                     <generate>
                         ...
@@ -83,54 +94,33 @@ Simply add the meta plugin as a dependency to jOOQ codegen maven plugin. The fol
     </executions>
 </plugin>
 ```
+
 ### Gradle
+
+With the official [jOOQ Gradle plugin](https://www.jooq.org/doc/latest/manual/code-generation/codegen-gradle/):
+
 ```groovy
+plugins {
+    id "org.jooq.jooq-codegen-gradle" version "3.21.2"
+}
+
 dependencies {
-    // ...
-    jooqCodegen("org.flywaydb:flyway-database-postgresql")
-    jooqGenerator "com.github.sabomichal:jooq-meta-postgres-flyway:${plugin.version}"
-    // ...
+    jooqCodegen "com.github.sabomichal:jooq-meta-postgres-flyway:2.0.1"
+    jooqCodegen "org.flywaydb:flyway-database-postgresql:12.4.0"
 }
 
 jooq {
-    configurations {
-        main {
-            generationTool {
-                generator {
-                    database {
-                        name = "com.github.sabomichal.jooq.PostgresDDLDatabase"
-                        inputSchema = "public"
-                        includes = "public.*"
-                        excludes = "flyway_schema_history"
-                        properties {
-                            property {
-                                key = "databaseName"
-                                value = "jooqDb"
-                            }
-                            property {
-                                key = "locations"
-                                value = "src/main/resources/db/migration"
-                            }
-                            property {
-                                key = "dockerImage"
-                                value = "postgres:14"
-                            }
-                            property {
-                                key = "placeholders"
-                                value = "a=1,b=2"
-                            }
-                            property {
-                                key = "defaultSchema"
-                                value = "public"
-                            }
-                             property {
-                                key = "initSql"
-                                value = "SET search_path TO public;"
-                            }
-                        }
-                    }
-                    generate {
-                        // ...
+    configuration {
+        generator {
+            database {
+                name = "com.github.sabomichal.jooq.PostgresDDLDatabase"
+                inputSchema = "public"
+                includes = "public.*"
+                excludes = "flyway_schema_history"
+                properties {
+                    property {
+                        key = "locations"
+                        value = "src/main/resources/db/migration"
                     }
                 }
             }
@@ -138,4 +128,50 @@ jooq {
     }
 }
 ```
-If you like it, give it a star, if you don't, write an issue.
+
+## Properties
+
+All optional. Each one is a separate `<property>` of the `<database>` element.
+
+| Key                                    | Default       | Description                                                                                     |
+|----------------------------------------|---------------|-------------------------------------------------------------------------------------------------|
+| `locations`                            | *(empty)*     | Comma-separated migration directories, relative to the project directory.                       |
+| `dockerImage`                          | `postgres:18` | Any image compatible with `postgres`, e.g. `postgis/postgis:17-3.5`.                            |
+| `databaseName`                         | `jooqdb`      | Name of the database created in the container.                                                  |
+| `defaultSchema`                        | `public`      | Schema Flyway migrates and keeps its history table in.                                          |
+| `placeholders`                         | *(empty)*     | Flyway placeholders as comma-separated `key=value` pairs: `a=1,b=2`.                            |
+| `initSql`                              | *(none)*      | SQL Flyway runs on each new connection, e.g. `SET search_path TO public;`.                      |
+| `flyway.postgresql.transactional.lock` | `true`        | PostgreSQL transactional lock, see [flyway#3492](https://github.com/flyway/flyway/issues/3492). |
+
+```xml
+<properties>
+    <property>
+        <key>locations</key>
+        <value>src/main/resources/db/migration,src/main/resources/db/seed</value>
+    </property>
+    <property>
+        <key>dockerImage</key>
+        <value>postgres:17</value>
+    </property>
+    <property>
+        <key>placeholders</key>
+        <value>owner=app,tablespace=pg_default</value>
+    </property>
+</properties>
+```
+
+## Troubleshooting
+
+| Error                                                | Fix                                                             |
+|------------------------------------------------------|-----------------------------------------------------------------|
+| `Could not find a valid Docker environment`          | Docker must be running where the build runs (CI included).      |
+| `No database found to handle jdbc:postgresql…`       | Add `flyway-database-postgresql` to the generator dependencies. |
+| `No scripts location defined` / nothing generated    | Set `locations`; it is resolved against the project directory.  |
+
+## Limitations
+
+- Placeholder values can't contain `,` or `=`.
+
+## License
+
+[Apache 2.0](LICENSE)
