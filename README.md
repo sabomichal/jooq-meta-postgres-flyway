@@ -7,13 +7,14 @@ jOOQ code generation from Flyway migrations, against a real PostgreSQL. The gene
 starts PostgreSQL in Docker (Testcontainers), runs your migrations with Flyway and then
 reverse-engineers the result. No running database needed at build time, only Docker.
 
-```mermaid
-flowchart LR
-    M["Flyway migrations<br/>db/migration/*.sql"]
-    P[("PostgreSQL<br/>throwaway Docker container")]
-    G["jOOQ classes<br/>target/generated-sources"]
-    M -- "Flyway migrate" --> P
-    P -- "jOOQ reverse-engineer" --> G
+```
+ db/migration/*.sql
+         │  Flyway migrate
+         ▼
+ PostgreSQL (throwaway Docker container)
+         │  jOOQ reverse-engineer
+         ▼
+ generated jOOQ classes
 ```
 
 ## Features
