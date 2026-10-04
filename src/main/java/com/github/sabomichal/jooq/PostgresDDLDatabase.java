@@ -8,10 +8,12 @@ import org.jooq.impl.DSL;
 import org.jooq.meta.postgres.PostgresDatabase;
 import org.jooq.tools.JooqLogger;
 import org.jooq.tools.jdbc.JDBCUtils;
+import org.testcontainers.containers.wait.strategy.WaitAllStrategy;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 import org.testcontainers.utility.DockerImageName;
 
 import java.sql.Connection;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
@@ -20,6 +22,7 @@ import java.util.stream.Collectors;
 
 import static org.jooq.tools.StringUtils.isBlank;
 import static org.testcontainers.containers.wait.strategy.Wait.forListeningPort;
+import static org.testcontainers.containers.wait.strategy.Wait.forSuccessfulCommand;
 
 
 /**
@@ -74,7 +77,14 @@ public class PostgresDDLDatabase extends PostgresDatabase {
                     .withDatabaseName(databaseName)
                     .withUsername("user")
                     .withPassword("pwd")
-                    .waitingFor(forListeningPort());
+                    .waitingFor(new WaitAllStrategy()
+                        // pg_isready over TCP succeeds only once the real server accepts connections:
+                        // the entrypoint's init server listens on the unix socket only, and during
+                        // startup pg_isready reports "rejecting connections".
+                        .withStrategy(forSuccessfulCommand("pg_isready -h 127.0.0.1 -p 5432"))
+                        // Colima can report readiness before the mapped port is reachable.
+                        .withStrategy(forListeningPort())
+                        .withStartupTimeout(Duration.ofSeconds(60)));
                 postgresContainer.start();
 
                 Properties info = new Properties();
