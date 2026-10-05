@@ -38,7 +38,7 @@ Flyway 10+ needs `flyway-database-postgresql` on the generator classpath next to
 The plugin's dependencies need two overrides:
 
 - `testcontainers`: `jooq-parent` pins `testcontainers` 1.20.6 in its `dependencyManagement`,
-  which replaces the 2.x version the plugin needs (plugin `2.0.1` is built with `2.0.5`).
+  which replaces the 2.x version the plugin needs (plugin `2.0.2` is built with `2.0.5`).
 - `jackson-annotations`: `docker-java-api` (pulled in by Testcontainers) brings an older
   version, which breaks `jooq-codegen`.
 
@@ -50,7 +50,7 @@ The plugin's dependencies need two overrides:
         <dependency>
             <groupId>com.github.sabomichal</groupId>
             <artifactId>jooq-meta-postgres-flyway</artifactId>
-            <version>2.0.1</version>
+            <version>2.0.2</version>
         </dependency>
         <dependency>
             <groupId>org.flywaydb</groupId>
@@ -111,7 +111,7 @@ plugins {
 }
 
 dependencies {
-    jooqCodegen "com.github.sabomichal:jooq-meta-postgres-flyway:2.0.1"
+    jooqCodegen "com.github.sabomichal:jooq-meta-postgres-flyway:2.0.2"
     jooqCodegen "org.flywaydb:flyway-database-postgresql:12.4.0"
 }
 
