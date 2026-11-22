@@ -40,7 +40,7 @@ another Flyway version, override **both** with the same version, as in the examp
 The plugin's dependencies need two overrides:
 
 - `testcontainers`: `jooq-parent` pins `testcontainers` 1.20.6 in its `dependencyManagement`,
-  which replaces the 2.x version the plugin needs (plugin `2.0.2` is built with `2.0.5`).
+  which replaces the 2.x version the plugin needs (plugin `2.0.3` is built with `2.0.5`).
 - `jackson-annotations`: `docker-java-api` (pulled in by Testcontainers) brings an older
   version, which breaks `jooq-codegen`.
 
@@ -52,7 +52,7 @@ The plugin's dependencies need two overrides:
         <dependency>
             <groupId>com.github.sabomichal</groupId>
             <artifactId>jooq-meta-postgres-flyway</artifactId>
-            <version>2.0.2</version>
+            <version>2.0.3</version>
         </dependency>
         <!-- optional: your Flyway version, keep both on the same version -->
         <dependency>
@@ -119,7 +119,7 @@ plugins {
 }
 
 dependencies {
-    jooqCodegen "com.github.sabomichal:jooq-meta-postgres-flyway:2.0.2"
+    jooqCodegen "com.github.sabomichal:jooq-meta-postgres-flyway:2.0.3"
 }
 
 jooq {
