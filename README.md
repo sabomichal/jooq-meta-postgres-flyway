@@ -169,7 +169,7 @@ All optional. Each one is a separate `<property>` of the `<database>` element.
 |--------------------------------------------------------------------------|--------------------------------------------------------------------------------------------|
 | `Could not find a valid Docker environment`                              | Docker must be running where the build runs (CI included).                                 |
 | `No database found to handle jdbc:postgresql…`                           | `flyway-database-postgresql` is missing: use plugin `2.0.3`+ or add it to the dependencies. |
-| `NoSuchMethodError: …PostgreSQLConnection.updateOriginalState()`         | `flyway-core` and `flyway-database-postgresql` differ: override both to the same version.  |
+| `NoSuchMethodError: …PostgreSQLConnection.updateOriginalState()`         | `flyway-core` and `flyway-database-postgresql` differ: remove your `flyway-database-postgresql`, or override both to the same version. |
 | `Configuring 'transactional' via this API requires 'jackson-databind'…`  | Plugin `2.0.2` with Flyway 13: upgrade to `2.0.3`+.                                         |
 | `No scripts location defined` / nothing generated                        | Set `locations`; it is resolved against the project directory.                             |
 
