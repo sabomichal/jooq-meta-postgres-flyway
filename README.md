@@ -31,9 +31,10 @@ reverse-engineers the result. No running database needed at build time, only Doc
 | `2.0.x` | 3.21.x | 21+  |
 | `1.0.x` | 3.16.x | 11+  |
 
-The plugin brings `flyway-core` and `flyway-database-postgresql`. To run your migrations with
-another Flyway version, override **both** with the same version, as in the example below: a
-`flyway-database-postgresql` newer than `flyway-core` fails with `NoSuchMethodError`.
+The plugin brings `flyway-core` and `flyway-database-postgresql`, don't add them. If you pinned
+`flyway-database-postgresql` for plugin `2.0.2` or older, remove it: Maven doesn't align it with the
+plugin's `flyway-core`, and a version mismatch fails with `NoSuchMethodError`. To run the migrations
+with another Flyway version, override **both** with the same version.
 
 ### Maven
 
@@ -53,17 +54,6 @@ The plugin's dependencies need two overrides:
             <groupId>com.github.sabomichal</groupId>
             <artifactId>jooq-meta-postgres-flyway</artifactId>
             <version>2.0.3</version>
-        </dependency>
-        <!-- optional: your Flyway version, keep both on the same version -->
-        <dependency>
-            <groupId>org.flywaydb</groupId>
-            <artifactId>flyway-core</artifactId>
-            <version>${flyway.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.flywaydb</groupId>
-            <artifactId>flyway-database-postgresql</artifactId>
-            <version>${flyway.version}</version>
         </dependency>
         <!-- jooq-parent pins testcontainers 1.20.6 -->
         <dependency>
