@@ -1,6 +1,7 @@
 package com.github.sabomichal.jooq;
 
 import org.flywaydb.core.Flyway;
+import org.flywaydb.database.postgresql.PostgreSQLConfigurationExtension;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.exception.DataAccessException;
@@ -92,9 +93,6 @@ public class PostgresDDLDatabase extends PostgresDatabase {
                 info.put("password", postgresContainer.getPassword());
                 connection = new org.postgresql.Driver().connect(postgresContainer.getJdbcUrl(), info);
 
-                Map<String, String> flywayConfigProperties = Map.of(
-                        FLYWAY_POSTGRESQL_TRANSACTIONAL_LOCK, getProperties().getProperty(FLYWAY_POSTGRESQL_TRANSACTIONAL_LOCK, "true"));
-
                 String locationsProperty = getProperties().getProperty("locations");
                 if (isBlank(locationsProperty)) {
                     locationsProperty = "";
@@ -122,11 +120,16 @@ public class PostgresDDLDatabase extends PostgresDatabase {
                 String initSql = getProperties().getProperty("initSql");
 
                 var flywayConfig = Flyway.configure()
-                    .configuration(flywayConfigProperties)
                     .dataSource(postgresContainer.getJdbcUrl(), postgresContainer.getUsername(), postgresContainer.getPassword())
                     .locations(locations)
                     .schemas(defaultSchema)
                     .placeholders(placeholders);
+
+                // Set through the typed extension: configuring extension properties via
+                // configuration(Map) needs jackson-databind, which is optional since Flyway 13.
+                flywayConfig.getConfigurationExtension(PostgreSQLConfigurationExtension.class)
+                    .setTransactionalLock(Boolean.parseBoolean(
+                        getProperties().getProperty(FLYWAY_POSTGRESQL_TRANSACTIONAL_LOCK, "true")));
 
                 if (!isBlank(initSql)) {
                     flywayConfig.initSql(initSql);

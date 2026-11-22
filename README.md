@@ -31,7 +31,9 @@ reverse-engineers the result. No running database needed at build time, only Doc
 | `2.0.x` | 3.21.x | 21+  |
 | `1.0.x` | 3.16.x | 11+  |
 
-Flyway 10+ needs `flyway-database-postgresql` on the generator classpath next to the plugin.
+The plugin brings `flyway-core` and `flyway-database-postgresql`. To run your migrations with
+another Flyway version, override **both** with the same version, as in the example below: a
+`flyway-database-postgresql` newer than `flyway-core` fails with `NoSuchMethodError`.
 
 ### Maven
 
@@ -51,6 +53,12 @@ The plugin's dependencies need two overrides:
             <groupId>com.github.sabomichal</groupId>
             <artifactId>jooq-meta-postgres-flyway</artifactId>
             <version>2.0.2</version>
+        </dependency>
+        <!-- optional: your Flyway version, keep both on the same version -->
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+            <version>${flyway.version}</version>
         </dependency>
         <dependency>
             <groupId>org.flywaydb</groupId>
@@ -112,7 +120,6 @@ plugins {
 
 dependencies {
     jooqCodegen "com.github.sabomichal:jooq-meta-postgres-flyway:2.0.2"
-    jooqCodegen "org.flywaydb:flyway-database-postgresql:12.4.0"
 }
 
 jooq {
@@ -168,11 +175,13 @@ All optional. Each one is a separate `<property>` of the `<database>` element.
 
 ## Troubleshooting
 
-| Error                                                | Fix                                                             |
-|------------------------------------------------------|-----------------------------------------------------------------|
-| `Could not find a valid Docker environment`          | Docker must be running where the build runs (CI included).      |
-| `No database found to handle jdbc:postgresql…`       | Add `flyway-database-postgresql` to the generator dependencies. |
-| `No scripts location defined` / nothing generated    | Set `locations`; it is resolved against the project directory.  |
+| Error                                                                    | Fix                                                                                        |
+|--------------------------------------------------------------------------|--------------------------------------------------------------------------------------------|
+| `Could not find a valid Docker environment`                              | Docker must be running where the build runs (CI included).                                 |
+| `No database found to handle jdbc:postgresql…`                           | `flyway-database-postgresql` is missing: use plugin `2.0.3`+ or add it to the dependencies. |
+| `NoSuchMethodError: …PostgreSQLConnection.updateOriginalState()`         | `flyway-core` and `flyway-database-postgresql` differ: override both to the same version.  |
+| `Configuring 'transactional' via this API requires 'jackson-databind'…`  | Plugin `2.0.2` with Flyway 13: upgrade to `2.0.3`+.                                         |
+| `No scripts location defined` / nothing generated                        | Set `locations`; it is resolved against the project directory.                             |
 
 ## Limitations
 
